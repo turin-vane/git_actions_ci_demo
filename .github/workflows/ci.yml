@@ -1,0 +1,43 @@
+# Nombre del flujo de trabajo, visible en la pestaña "Actions" de GitHub.
+name: Python CI - Pruebas de Descuento
+
+# Define qué eventos disparan este flujo de trabajo.
+on:
+  push:
+    branches: [ main ] # Se ejecuta automáticamente en cada 'push' a la rama principal.
+  pull_request:
+    branches: [ main ] # Se ejecuta en cada Pull Request dirigido a 'main'.
+
+# Define los trabajos (jobs) que se ejecutarán. Aquí solo tenemos uno: 'test'.
+jobs:
+  test:
+    # 1. Definir el entorno de ejecución (el 'runner').
+    runs-on: ubuntu-latest
+    
+    # Define la secuencia de pasos a ejecutar.
+    steps:
+      
+      # 2. Step: Clonar el repositorio.
+      # Esta acción estándar de GitHub descarga tu código en el 'runner'.
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      # 3. Step: Configurar el entorno de Python.
+      # Configura una versión específica de Python (usamos 3.10, común y estable).
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      # 4. Step: Instalar dependencias.
+      # Aunque solo usamos 'unittest' (estándar), es buena práctica preparar el PIP.
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          # Si usaras pytest o librerías adicionales, se instalarían aquí.
+
+      # 5. Step: Ejecutar las pruebas unitarias.
+      # Este es el corazón de la Integración Continua: si esta prueba falla, 
+      # el Job falla y la CI se detiene (se pone "roja").
+      - name: Ejecutar Pruebas Unitarias
+        run: python test_app.py
